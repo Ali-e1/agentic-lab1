@@ -60,11 +60,26 @@ class LocalLLM:
                      higher values = more random replies.
         Also stores timing information in self.last_stats.
         """
-        # TODO 1.2: turn the messages into model inputs with the chat template, generate, and decode ONLY the new tokens.
-        # HINT: self.tokenizer.apply_chat_template(messages, add_generation_prompt=True, return_tensors="pt", return_dict=True)
-        # HINT: self.model.generate(**inputs, max_new_tokens=..., do_sample=..., stop_strings=stop, tokenizer=self.tokenizer)
-        # HINT: the output contains the prompt tokens followed by the new tokens.
-        raise NotImplementedError("TODO 1.2 (see the comment above)")
+        inputs = self.tokenizer.apply_chat_template(
+            messages, add_generation_prompt=True, return_tensors="pt", return_dict=True
+        ).to(self.device)
+        prompt_len = inputs["input_ids"].shape[-1]
+        generation_options = {
+            "max_new_tokens": max_new_tokens,
+            "do_sample": temperature > 0,
+        }
+        if temperature > 0:
+            generation_options.update(temperature=temperature, top_p=0.9)
+        if stop:
+            generation_options.update(stop_strings=stop, tokenizer=self.tokenizer)
+
+        start = time.perf_counter()
+        with torch.inference_mode():
+            output = self.model.generate(**inputs, **generation_options)
+        elapsed = time.perf_counter() - start
+        # generate() returns the prompt followed by the assistant's new tokens.
+        new_tokens = output[0, prompt_len:]
+        text = self.tokenizer.decode(new_tokens, skip_special_tokens=True)
 
         self.last_stats = {
             "prompt_tokens": int(prompt_len),

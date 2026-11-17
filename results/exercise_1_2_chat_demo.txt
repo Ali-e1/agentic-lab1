@@ -1,0 +1,43 @@
+Loading Qwen/Qwen2.5-1.5B-Instruct on cpu (torch.bfloat16) ...
+
+>>> What is an intelligent agent, in one sentence?
+An intelligent agent is a computer program or machine designed to perceive its environment and take actions that maximize its chances of achieving its goals based on some form of reasoning.
+[33 new tokens in 4.15 s = 8.0 tokens/s]
+
+(temperature 0.0)
+>>> Invent a name for a delivery robot.
+RoboBite.
+[6 new tokens in 0.84 s = 7.1 tokens/s]
+
+(temperature 0.0)
+>>> Invent a name for a delivery robot.
+RoboBite.
+[6 new tokens in 0.81 s = 7.4 tokens/s]
+
+(temperature 0.0)
+>>> Invent a name for a delivery robot.
+RoboBite.
+[6 new tokens in 0.8 s = 7.5 tokens/s]
+
+(temperature 1.0)
+>>> Invent a name for a delivery robot.
+"ZephyrBot"
+[7 new tokens in 1.01 s = 6.9 tokens/s]
+
+(temperature 1.0)
+>>> Invent a name for a delivery robot.
+RoboBuddy
+[5 new tokens in 0.81 s = 6.2 tokens/s]
+
+(temperature 1.0)
+>>> Invent a name for a delivery robot.
+RoboBuddy
+[5 new tokens in 0.79 s = 6.3 tokens/s]
+
+>>> What is the battery capacity of robot Atlas in Wh?
+Robot Atlas has a battery capacity of approximately 100Wh.
+[15 new tokens in 1.95 s = 7.7 tokens/s]
+
+>>> What is 37 * 48 + 112?
+The result of 37 * 48 + 112 is 1906.
+[23 new tokens in 3.01 s = 7.7 tokens/s]

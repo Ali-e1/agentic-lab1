@@ -13,3 +13,5 @@ venv/
 # Model files belong in the Hugging Face cache, not in git
 *.safetensors
 *.bin
+# Local lab instructions
+/Lab1_Student_Handout.pdf
