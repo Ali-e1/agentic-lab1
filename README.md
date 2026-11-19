@@ -35,8 +35,11 @@ The calculator evaluates arithmetic using Python's syntax tree and an explicit l
 
 The parser reads the first action or final answer, accepts JSON or plain-text tool arguments, and raises a format error when neither field appears.
 
+## Exercise 1.5 — agent loop
+
+All 14 tests passed. Qwen correctly answered 15 km for Atlas (2 tool calls). For largest payload it saw Etna's 80 kg, then looked up Atlas again and answered 40 instead of Etna (6 calls).
+
 ## Remaining work
 
-1. Exercise 1.5: agent loop.
-2. Exercise 1.6: run `python evaluate.py`; record accuracy, timing and Q5–Q8.
-3. Exercise 1.7: complete the tools; compare `python smol_agent.py` with `python smol_agent.py --code`; answer Q9–Q10.
+
+Exercise 1.6 covers evaluation and Q5–Q8. Exercise 1.7 compares the smolagents implementations for Q9–Q10.

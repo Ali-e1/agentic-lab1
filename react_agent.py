@@ -1,7 +1,5 @@
 """A ReAct agent written from first principles: Thought -> Action -> Observation -> ... -> Final Answer.
 
-Exercise 1.5: complete ReActAgent.run().
-
 Run:  python react_agent.py "How many kilometres can robot Atlas travel on a full battery?"
 """
 from __future__ import annotations
@@ -156,10 +154,29 @@ class ReActAgent:
         """
         result = AgentResult(question=question, answer=None)
         start = time.perf_counter()
-        # TODO 1.5: implement the loop described in the docstring.
-        # HINT: messages = [{"role": "system", ...}, {"role": "user", "content": f"Question: {question}"}]
-        # HINT: reply = self.llm.chat(messages, stop=["Observation:"]); then append {"role": "assistant", "content": reply}
-        raise NotImplementedError("TODO 1.5 (see the comment above)")
+        messages = [{"role": "system", "content": self.system_prompt},
+                    {"role": "user", "content": f"Question: {question}"}]
+        for _ in range(self.max_steps):
+            reply = self.llm.chat(messages, stop=["Observation:"])
+            messages.append({"role": "assistant", "content": reply})
+            self.log(reply)
+            try:
+                step = parse_step(reply)
+            except ParseError:
+                result.steps.append({"reply": reply, "observation": FORMAT_REMINDER})
+                feedback = FORMAT_REMINDER
+            else:
+                record = {"thought": step.thought, "action": step.action, "input": step.action_input}
+                result.steps.append(record)
+                if step.final_answer is not None:
+                    result.answer = record["final_answer"] = step.final_answer
+                    break
+                observation = self.call_tool(step.action, step.action_input)
+                result.tool_calls += 1
+                record["observation"] = observation
+                feedback = f"Observation: {observation}"
+            messages.append({"role": "user", "content": feedback})
+            self.log(feedback)
         result.seconds = round(time.perf_counter() - start, 2)
         return result
 
