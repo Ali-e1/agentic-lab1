@@ -16,7 +16,6 @@ python -m pytest -q tests/test_llm.py
 ```
 
 Float32 ran out of memory; bfloat16 worked. Exercise 1.2 tests: **2 passed**.
-The original lab tests still have 11 expected failures until Exercises 1.3–1.5 are implemented.
 
 ## Exercise 1.2 — results and answers
 
@@ -28,8 +27,12 @@ transformers 5.23.0. [Full experiment output](results/exercise_1_2_chat_demo.txt
 - **Q3 — Hallucination:** Atlas's battery was claimed to be about **100 Wh**, versus **1200 Wh** in `data/fleet.json`. Acting on invented data could cause incorrect route or charging decisions. The model also answered **1906** for arithmetic whose correct result is **1888**, motivating a calculator tool.
 - **Q4 — Decoding:** `output[0, prompt_len:]` selects only new tokens; decoding everything would repeat the prompt and could confuse the agent's parser.
 
+## Exercise 1.3 — calculator
+
+The calculator evaluates arithmetic using Python's syntax tree and an explicit list of allowed operations and functions. All three calculator tests passed.
+
 ## Remaining work
 
-1. Exercises 1.3–1.5: calculator, parser, agent loop; pass all 12 original tests.
+1. Exercises 1.4–1.5: parser and agent loop.
 2. Exercise 1.6: run `python evaluate.py`; record accuracy, timing and Q5–Q8.
 3. Exercise 1.7: complete the tools; compare `python smol_agent.py` with `python smol_agent.py --code`; answer Q9–Q10.

@@ -54,10 +54,23 @@ def _eval_node(node: ast.AST) -> float:
     Allowed: numbers, + - * / // % **, unary + and -, and the functions in _FUNCTIONS.
     Anything else (names, attributes, strings, imports...) must raise ValueError.
     """
-    # TODO 1.3: evaluate the node. Handle ast.Constant, ast.BinOp, ast.UnaryOp and ast.Call; reject everything else.
-    # HINT: for ast.BinOp use _BIN_OPS[type(node.op)](_eval_node(node.left), _eval_node(node.right))
-    # HINT: for ast.Call check that node.func is an ast.Name whose id is in _FUNCTIONS
-    raise NotImplementedError("TODO 1.3 (see the comment above)")
+    if isinstance(node, ast.Constant) and type(node.value) in (int, float):
+        return node.value
+    if isinstance(node, ast.UnaryOp) and type(node.op) in _UNARY_OPS:
+        return _UNARY_OPS[type(node.op)](_eval_node(node.operand))
+    if isinstance(node, ast.BinOp) and type(node.op) in _BIN_OPS:
+        left, right = _eval_node(node.left), _eval_node(node.right)
+        if isinstance(node.op, ast.Pow) and isinstance(left, int) and isinstance(right, int):
+            if abs(left) > 1 and left.bit_length() * right > 12000:
+                raise ValueError("power exceeds calculator limit")
+        result = _BIN_OPS[type(node.op)](left, right)
+        if isinstance(result, complex) or (isinstance(result, int) and result.bit_length() > 12000):
+            raise ValueError("result outside calculator range")
+        return result
+    if isinstance(node, ast.Call) and isinstance(node.func, ast.Name):
+        if node.func.id in _FUNCTIONS and not node.keywords:
+            return _FUNCTIONS[node.func.id](*(_eval_node(arg) for arg in node.args))
+    raise ValueError("unsupported expression")
 
 
 def calculator(expression: str) -> str:
@@ -66,7 +79,7 @@ def calculator(expression: str) -> str:
         value = _eval_node(tree.body)
     except ZeroDivisionError:
         return "Error: division by zero"
-    except (SyntaxError, ValueError, TypeError) as exc:
+    except (SyntaxError, ValueError, TypeError, OverflowError, RecursionError) as exc:
         return f"Error: cannot evaluate {expression!r} ({exc})"
     if isinstance(value, float) and value.is_integer():
         value = int(value)
