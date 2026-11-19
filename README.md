@@ -1,7 +1,7 @@
 # Lab 1: Local LLM agents
 
 Agentic AI and Multiagent Systems, University of Messina.
-Student(s): _your name(s)_
+Student(s): Ali Esmaeili 588959
 
 ## Run (PowerShell)
 
@@ -55,3 +55,19 @@ Qwen2.5-1.5B-Instruct, CPU, bfloat16. All 12 questions used the lab's scoring ru
 - **Q8. Step limit.** The cap bounds repeated calls and retries. At two steps, seven questions ended without a final answer. IDs 4 and 11 lost credit. On ID 4 the calculator returned 15 on the second turn, leaving no turn to report it.
 
 [Ten-step results](results/Qwen2.5-1.5B-Instruct_results.csv) · [Two-step results](results/Qwen2.5-1.5B-Instruct_steps2.csv) · [Agent traces](results/exercise_1_6_trace.txt)
+
+## Exercise 1.7 — smolagents
+
+**Q9. Comparison.** Qwen2.5-1.5B-Instruct on CPU with bfloat16. Each cell shows the answer, steps and seconds.
+
+| Question (expected) | ReAct from 1.6 | ToolCallingAgent | CodeAgent, short run |
+|---|---|---|---|
+| Atlas range (15 km) | **15 km**, 3, 22.3 | 18,000 km, 11, 500.0 | No distance, 3, 59.6 |
+| Largest payload (Etna) | 40, 7, 63.7 | Atlas, 11, 294.8 | No robot selected, 3, 52.2 |
+| Borea energy (600 Wh) | 10, 5, 50.7 | No estimate, 11, 312.0 | No estimate, 3, 59.2 |
+
+ReAct scored 1/3, and both smolagents runs scored 0/3. The default CodeAgent run was stopped after eight steps on Atlas. Its replacement used two steps and 64 tokens per reply, so timings compare different limits. smolagents counts the fallback answer as an extra step.
+
+Run `python smol_agent.py` for ToolCallingAgent or use `python smol_agent.py --code --max-steps 2 --max-new-tokens 64` for the short CodeAgent run. See the [failure log](results/exercise_1_7_failures.md).
+
+**Q10. Execution safety.** CodeAgent runs in a restricted interpreter in the host process. It exposes fictional fleet data and a calculator, allows `json` alongside its default imports, and blocked a generated `import requests`. For real data, isolate execution, restrict file and network access, and require approval for sending messages or making payments.

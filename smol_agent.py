@@ -6,7 +6,7 @@ Run:  python smol_agent.py                      (ToolCallingAgent on three quest
 """
 from __future__ import annotations
 
-import sys
+import argparse
 import time
 
 import torch
@@ -40,9 +40,21 @@ def get_robot(name: str) -> str:
     return T.get_robot(name)
 
 
-# TODO 1.7: write the two missing tools, list_robots() and get_distance(origin, destination), with @tool.
-# HINT: copy the pattern above: type hints, a docstring and an "Args:" section; call T.list_robots() / T.get_distance(...)
-raise NotImplementedError("TODO 1.7 (see the comment above)")
+@tool
+def list_robots() -> str:
+    """Returns the names of all robots in the fleet as comma-separated text."""
+    return T.list_robots()
+
+
+@tool
+def get_distance(origin: str, destination: str) -> str:
+    """Returns the distance between two depots in kilometres as text.
+
+    Args:
+        origin: The starting depot name, for example "Campus".
+        destination: The destination depot name, for example "Port".
+    """
+    return T.get_distance(origin, destination)
 
 
 QUESTIONS = [
@@ -52,26 +64,33 @@ QUESTIONS = [
 ]
 
 
-def build_model() -> TransformersModel:
+def build_model(max_new_tokens: int = 512) -> TransformersModel:
     device, dtype = pick_device()
     if DTYPE:
         dtype = getattr(torch, DTYPE)
-    return TransformersModel(model_id=MODEL_ID, device_map=device, model_kwargs={"dtype": dtype}, max_new_tokens=512)
+    return TransformersModel(model_id=MODEL_ID, device_map=device, model_kwargs={"dtype": dtype},
+                             max_new_tokens=max_new_tokens)
 
 
 def main() -> None:
-    use_code = "--code" in sys.argv
-    questions = [a for a in sys.argv[1:] if not a.startswith("--")] or QUESTIONS
-    model = build_model()
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser.add_argument("--code", action="store_true", help="use CodeAgent")
+    parser.add_argument("--max-steps", type=int, default=10)
+    parser.add_argument("--max-new-tokens", type=int, default=512)
+    parser.add_argument("questions", nargs="*")
+    args = parser.parse_args()
+    if args.max_steps < 1 or args.max_new_tokens < 1:
+        parser.error("step and token limits must be positive")
+    model = build_model(args.max_new_tokens)
     my_tools = [calculator, get_robot, list_robots, get_distance]
-    if use_code:
+    if args.code:
         # get_robot returns JSON text, so the generated code may need the json module:
         # smolagents only allows imports that you authorise explicitly.
-        agent = CodeAgent(tools=my_tools, model=model, max_steps=10, additional_authorized_imports=["json"])
+        agent = CodeAgent(tools=my_tools, model=model, max_steps=args.max_steps, additional_authorized_imports=["json"])
     else:
-        agent = ToolCallingAgent(tools=my_tools, model=model, max_steps=10)
+        agent = ToolCallingAgent(tools=my_tools, model=model, max_steps=args.max_steps)
 
-    for q in questions:
+    for q in args.questions or QUESTIONS:
         start = time.perf_counter()
         answer = agent.run(q)
         steps = len([s for s in agent.memory.steps if type(s).__name__ == "ActionStep"])

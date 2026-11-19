@@ -15,3 +15,5 @@ venv/
 *.bin
 # Local lab instructions
 /Lab1_Student_Handout.pdf
+# Local smolagents transcripts
+/results/exercise_1_7_*.txt
