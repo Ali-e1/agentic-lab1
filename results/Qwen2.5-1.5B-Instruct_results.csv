@@ -1,0 +1,13 @@
+id,question,gold,direct_answer,direct_ok,direct_s,agent_answer,agent_ok,agent_s,tool_calls,steps
+1,What is 37 * 48 + 112?,1888,2056,False,1.21,1888,True,14.31,1,2
+2,"What is the maximum payload of robot Cirrus, in kg?",60,50,False,0.64,60,True,14.54,1,2
+3,"How far is it from the Port depot to the Hospital depot, in km?",7,10,False,0.57,7 km,True,12.53,1,2
+4,How many kilometres can robot Atlas travel on a full battery?,15,100,False,0.64,15 kilometers,True,22.3,2,3
+5,Which robot has the largest maximum payload?,Etna,None,False,0.41,40,False,63.69,6,7
+6,Robot Borea drives from the Campus depot to the Port depot and back. How many Wh of energy does it use?,600,1000,False,0.81,10,False,50.65,4,5
+7,Can robot Delta carry a 45 kg parcel? Answer yes or no.,no,yes,False,0.42,no,True,14.75,1,2
+8,How many minutes does robot Etna need to drive from the North depot to the Campus depot?,30,30,True,0.54,16,False,20.34,2,3
+9,"What is the total battery capacity of all the robots in the fleet, in Wh?",6600,12000,False,0.86,225,False,55.02,3,4
+10,What is 15% of 2480?,372,372,True,0.63,372,True,16.25,1,2
+11,At which depot is robot Cirrus based?,Campus,1,False,0.45,Campus,True,31.15,3,4
+12,Robot Atlas starts with a full battery and drives from the North depot to the Hospital depot. What percentage of its battery is left?,40,25,False,0.58,50,False,24.4,2,3
