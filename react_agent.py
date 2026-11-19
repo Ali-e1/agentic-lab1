@@ -1,6 +1,5 @@
 """A ReAct agent written from first principles: Thought -> Action -> Observation -> ... -> Final Answer.
 
-Exercise 1.4: complete parse_step().
 Exercise 1.5: complete ReActAgent.run().
 
 Run:  python react_agent.py "How many kilometres can robot Atlas travel on a full battery?"
@@ -91,10 +90,22 @@ def parse_step(text: str) -> Step:
       * Otherwise, if 'Final Answer:' appears, step.final_answer = the text after it (first line only).
       * If there is neither an action nor a final answer, raise ParseError.
     """
-    # TODO 1.4: implement the rules above. Regular expressions (re.search) make this short.
-    # HINT: re.search(r"Action\s*:\s*([A-Za-z_]\w*)", text) finds the tool name
-    # HINT: compare match.start() of the action and of the final answer to know which comes first
-    raise NotImplementedError("TODO 1.4 (see the comment above)")
+    decision = re.search(r"^[ \t]*(?:Action[ \t]*:[ \t]*(?P<tool>[A-Za-z_]\w*)"
+                         r"|Final Answer[ \t]*:(?P<answer>.*))", text, re.MULTILINE)
+    if decision is None:
+        raise ParseError("Expected an Action or Final Answer line")
+    thought_line = re.search(r"^[ \t]*Thought[ \t]*:(.*)", text[:decision.start()], re.MULTILINE)
+    thought = thought_line[1].strip() if thought_line else ""
+    if decision["answer"] is not None:
+        return Step(thought=thought, final_answer=decision["answer"].strip())
+
+    # Limit the input to this action even if the model writes another step.
+    remainder = text[decision.end():]
+    block = re.split(r"^[ \t]*(?:Thought|Action|Observation|Final Answer)[ \t]*:",
+                     remainder, maxsplit=1, flags=re.MULTILINE)[0]
+    marker = re.search(r"^[ \t]*Action Input[ \t]*:", block, re.MULTILINE)
+    arguments = _parse_json_object(block[marker.end():]) if marker else {}
+    return Step(thought=thought, action=decision["tool"], action_input=arguments)
 
 
 # ---------------------------------------------------------------- the agent

@@ -31,8 +31,12 @@ transformers 5.23.0. [Full experiment output](results/exercise_1_2_chat_demo.txt
 
 The calculator evaluates arithmetic using Python's syntax tree and an explicit list of allowed operations and functions. All three calculator tests passed.
 
+## Exercise 1.4 — ReAct parser
+
+The parser reads the first action or final answer, accepts JSON or plain-text tool arguments, and raises a format error when neither field appears.
+
 ## Remaining work
 
-1. Exercises 1.4–1.5: parser and agent loop.
+1. Exercise 1.5: agent loop.
 2. Exercise 1.6: run `python evaluate.py`; record accuracy, timing and Q5–Q8.
 3. Exercise 1.7: complete the tools; compare `python smol_agent.py` with `python smol_agent.py --code`; answer Q9–Q10.
